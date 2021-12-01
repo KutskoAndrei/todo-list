@@ -1,0 +1,12 @@
+﻿@using ToDoList.Models;
+
+
+
+<ol id="notDoneList" class="list-group ui-sortable-handle">
+    @foreach (ToDoCase c in ViewBag.ToDoList)
+    {
+        <li class="h4">
+            <span>@c.Case</span>
+        </li>
+    }
+</ol>

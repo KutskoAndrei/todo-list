@@ -1,0 +1,58 @@
+﻿@model ToDoList.ViewModels.LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container"></div>    
+        <div class="container-fluid">
+
+            <form asp-action="Login" asp-controller="Account" asp-antiforgery="true" class="form-group">               
+                
+                <div class="form-row justify-content-center text-center">
+                    <div class="col-12">
+                        <label asp-for="Email">Введите Email</label>
+                    </div>
+                    <div class="col-12">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <input type="text" asp-for="Email" />
+                    </div>
+                </div>
+                
+                <div class="form-row justify-content-center text-center">
+                    <div class="col-12">
+                        <label asp-for="Password">Введите пароль</label>
+                    </div>
+                    <div class="col-12">
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="Password" />
+                    </div>
+                    <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+                </div>
+
+                <div class="form-row justify-content-center text-center">                    
+                        <div class="col-12">
+                            <input type="submit" value="Войти" class="btn btn-info" />
+                        </div>                   
+                </div>
+            </form>
+
+        </div>
+
+</body>
+</html>
+
+
+

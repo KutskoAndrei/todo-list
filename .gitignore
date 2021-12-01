@@ -1,0 +1,10 @@
+/bin
+/wwwroot
+/ToDoList
+/obj
+/.vs
+/.config
+/Properties
+ToDoList.sln
+appsettings.Development.json
+ToDoList.csproj.user

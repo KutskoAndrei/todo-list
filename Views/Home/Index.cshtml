@@ -1,0 +1,141 @@
+﻿@using ToDoList.ViewModels;
+@using ToDoList.Components; 
+
+@model ToDoList.ViewModels.AddCaseModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <form asp-action="Logout" asp-controller="Home" class="form-group">
+            <div class="form-group">
+                <input type="submit" value="Выйти" class="btn btn-info" />
+            </div>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            @await Component.InvokeAsync("ToDoList")  
+        </div>
+    </div>
+
+    <form asp-action="AddCase" asp-controller="Home" method="post">
+        <div class="validation" asp-validation-summary="ModelOnly"></div>
+        <div class="container">
+            <div class="row">
+
+                <div class="input-group">
+                    <!-- в input используется name вместо asp-for, тк в index не очищается введенная стока  -->
+                    <input type="text" name="modelCase" id="caseToAdd" class="form-control" placeholder="Что планируете сделать?" data-valmsg-replace="true" />
+                    <div class="input-group-btn">
+                        <button type="submit" id="btnCaseToAdd" class="btn btn-primary">Добавить</button>
+                    </div>
+                </div>
+                <div class="row">                    
+                    <span asp-validation-for="modelCase" class="text-danger"></span>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <form asp-action="DeleteCases" asp-controller="Home" method="post">
+        <div class="container">
+            <div class="row">
+                @await Component.InvokeAsync("DoneList")
+            </div>
+            <div class="row justify-content-left text-left">
+                <div class="col-12">
+                    <button type="submit" id="btnCasesToDel" class="btn btn-info">Удалить лишние</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    <script>
+
+        /*функция клика по списку будущих дел */
+        var moveToDoneList = function () {
+            var task = $(this).text();
+            var span = $('<span />').text(task);
+            var cb = $('<input type="checkbox" />');
+            var li = $('<li class="h4 ui-sortable-handle" />').append(cb).append(' ').append(span);
+            $('#doneList').append(li);
+            $(this).parent().remove();
+            span.click(moveToNotDoneList);
+
+            $(savePositionsForController);
+
+        };
+
+        /*функция клика по списку сделанных дел */
+        var moveToNotDoneList = function () {
+            var task = $(this).text();
+            var span = $('<span />').text(task);
+            var li = $('<li class="h4 ui-sortable-handle" />').append(span);
+            $('#notDoneList').append(li);
+            $(this).parent().remove();
+            span.click(moveToDoneList);
+
+            $(savePositionsForController);
+
+        };
+
+        /*функция для сохранения сортировки между списками и вызова контроллера(сохранение в базу) */
+        var savePositionsForController = function () {
+            /* присваиваем переменной не пустое значение, чтобы не было null в контроллере,
+             * там это значение отсекается т.к. в атрибутах верификации значение не может быть короче двух символов */
+            var doneListForController = "0";
+            $('#doneList li span').each(function () {
+                doneListForController = doneListForController + '|' + $(this).text();
+            });
+
+            /* присваиваем переменной не пустое значение, чтобы не было null в контроллере, 
+             * там это значение отсекается т.к. в атрибутах верификации значение не может быть короче двух символов */
+            var toDoListForController = "0";
+            $('#notDoneList li span').each(function () {
+                toDoListForController = toDoListForController + '|' + $(this).text();
+            });
+
+            $.post("@Url.Action("SaveToDbOnSort", "Home")", { doneSpans: doneListForController, todDoSpans: toDoListForController }, function () {                
+                    window.location.reload();                
+            });     
+        };
+
+      
+        $('#notDoneList li span').click(moveToDoneList);
+        $('#doneList li span').click(moveToNotDoneList);
+
+        /* скрываем кнопку, если список сделанных дел пуст */
+        $(function () {
+            if ($('#doneList li span').toArray().length == 0) {
+                $('#btnCasesToDel').attr('hidden', ':hidden');
+            }
+        });
+
+
+        /* БОНУС - перетаскивание внутри списка и межнду списками */
+        $(function () {
+            $('.ui-sortable-handle').sortable({               
+                connectWith: ".ui-sortable-handle", 
+                stop: savePositionsForController
+            });
+        });
+
+    </script>
+
+
+</body>
+</html>
