@@ -28,7 +28,7 @@ namespace ToDoList
         public void ConfigureServices(IServiceCollection services)
         {
             //подключаем базу данных
-            string connection = "Server=(localdb)\\mssqllocaldb;Database=todousersdb;Trusted_Connection=True;";
+            string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<UserContext>(options => options.UseSqlServer(connection));
 
             //подключаем конфигурацию для аутентификации
